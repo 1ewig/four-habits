@@ -6,8 +6,8 @@ A premium, momentum-based identity system and habit tracker designed for those w
 
 ## Key Features
 
-### 1. The Core Four
-Focus on the essentials. No clutter, no infinite lists. Just four high-impact habits that define your daily progress:
+### 1. Fully Customizable Core
+While the system promotes a "Core Four" philosophy for maximum impact, every habit is fully customizable. You can redefine your identity by tracking any four pillars that matter to you. Defaults include:
 - **sweat.** — Physical vitality and movement.
 - **build.** — Productivity, deep work, and creation.
 - **read.** — Continuous learning and mental expansion.
