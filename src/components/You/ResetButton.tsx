@@ -1,30 +1,33 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useHabitStoreBase } from '../../lib/store';
+import { Modal } from '../ui/Modal';
+import { SettingsCard } from '../ui/SettingsCard';
+import { TimePicker } from '../ui/TimePicker';
 import { Info } from 'lucide-react';
-import { Modal } from './Modal';
 
-interface ResetButtonProps {
-  reset_h: number;
-  reset_m: number;
-  setResetTime: (h: number, m: number) => void;
-  showToast: (message: string, onUndo: () => void) => void;
-}
-
-export function ResetButton({
-  reset_h,
-  reset_m,
-  setResetTime,
-  showToast
-}: ResetButtonProps) {
+export function ResetButton() {
+  const reset_h = useHabitStoreBase((s) => s.reset_h);
+  const reset_m = useHabitStoreBase((s) => s.reset_m);
+  const setResetTime = useHabitStoreBase((s) => s.setResetTime);
+  const showToast = useHabitStoreBase((s) => s.showToast);
+  
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleHoursChange = (h: number) => {
+    const prevH = reset_h;
+    setResetTime(h, reset_m);
+    showToast('reset hour updated', () => setResetTime(prevH, reset_m));
+  };
+
+  const handleMinutesChange = (m: number) => {
+    const prevM = reset_m;
+    setResetTime(reset_h, m);
+    showToast('reset minute updated', () => setResetTime(reset_h, prevM));
+  };
 
   return (
     <>
-      <motion.button
-        onClick={() => setIsOpen(true)}
-        className="col-span-2 bg-[var(--surface)] p-6 rounded-[var(--radius-xl)] flex items-center justify-between w-full text-left transition-colors hover:bg-[var(--surface-alt)]"
-        whileTap={{ scale: 0.95 }}
-      >
+      <SettingsCard onClick={() => setIsOpen(true)} className="p-6 items-center justify-between text-left">
         <div className="flex flex-col">
           <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">reset time</span>
           <span className="text-2xl font-bold text-[var(--text)]">
@@ -34,40 +37,18 @@ export function ResetButton({
         <div className="bg-[var(--surface-alt)] p-2 rounded-full text-[var(--text-dim)]">
           <Info className="w-5 h-5" />
         </div>
-      </motion.button>
+      </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="system settings">
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-4">
-            <label className="text-sm font-medium text-[var(--text-dim)]">reset time</label>
-            <div className="flex gap-4">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const prevH = reset_h;
-                  const newH = (reset_h + 1) % 24;
-                  setResetTime(newH, reset_m);
-                  showToast('reset hour updated', () => setResetTime(prevH, reset_m));
-                }}
-                className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)] w-24 text-center cursor-pointer text-2xl font-bold"
-              >
-                {reset_h.toString().padStart(2, '0')}
-              </motion.button>
-              <span className="text-2xl font-bold text-[var(--text-dim)] self-center">:</span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const prevM = reset_m;
-                  const newM = (reset_m + 15) % 60;
-                  setResetTime(reset_h, newM);
-                  showToast('reset minute updated', () => setResetTime(reset_h, prevM));
-                }}
-                className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)] w-24 text-center cursor-pointer text-2xl font-bold"
-              >
-                {reset_m.toString().padStart(2, '0')}
-              </motion.button>
-            </div>
-          </div>
+          <TimePicker
+            hours={reset_h}
+            minutes={reset_m}
+            onHoursChange={handleHoursChange}
+            onMinutesChange={handleMinutesChange}
+            hourLabel="reset hour"
+            minuteLabel="reset min"
+          />
 
           <div className="text-xs text-[var(--text-dim)] flex flex-col gap-3 bg-[var(--surface-alt)] p-4 rounded-2xl">
             <p>

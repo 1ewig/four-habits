@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { TRANSITIONS } from '../../lib/animations';
 
 interface HabitCardProps {
   key?: string | number;
@@ -25,7 +26,7 @@ export function HabitCard({ habit, isDone, onClick, viewDate, index }: HabitCard
           className="absolute inset-0 bg-white/20"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: [0, 0.5, 0], scale: [0.8, 1.2, 1.5] }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={TRANSITIONS.cardPulse}
         />
       )}
       <span className="relative z-10 text-[26px] leading-tight font-semibold tracking-tight break-words line-clamp-2">
