@@ -21,6 +21,7 @@ export interface HabitState {
   demo_mode: boolean;
   demo_history: Record<string, boolean[]>;
   viewDate: string;
+  toast: { message: string; onUndo: () => void } | null;
 
   // Actions
   setHabits: (habits: string[]) => void;
@@ -37,6 +38,8 @@ export interface HabitState {
   toggleDemoMode: () => void;
   setViewDate: (date: string) => void;
   syncViewDate: () => void;
+  showToast: (message: string, onUndo: () => void) => void;
+  hideToast: () => void;
 }
 
 const DEFAULT_DATA = {
@@ -55,6 +58,7 @@ const DEFAULT_DATA = {
   demo_mode: false,
   demo_history: {},
   viewDate: getTodayStr(),
+  toast: null,
 };
 
 export const useHabitStoreBase = create<HabitState>()(
@@ -133,6 +137,8 @@ export const useHabitStoreBase = create<HabitState>()(
           set({ demo_mode: false });
         }
       },
+      showToast: (message, onUndo) => set({ toast: { message, onUndo } }),
+      hideToast: () => set({ toast: null }),
     }),
     {
       name: 'habit_v4',
@@ -154,6 +160,15 @@ export function useHabitStore() {
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
+
+  // Auto-dismiss toast after 3 seconds
+  const toast = store.toast;
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => store.hideToast(), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast, store]);
 
   return store;
 }

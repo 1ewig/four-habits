@@ -1,28 +1,19 @@
 import { useState } from 'react';
+import { useHabitStoreBase } from '../../lib/store';
 import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
 import { FormField } from '../ui/FormField';
 import { Toggle } from '../ui/Toggle';
 
-interface ProfileButtonProps {
-  name: string;
-  bio: string;
-  setName: (name: string) => void;
-  setBio: (bio: string) => void;
-  demo_mode: boolean;
-  toggleDemoMode: () => void;
-  showToast: (message: string, onUndo: () => void) => void;
-}
-
-export function ProfileButton({
-  name,
-  bio,
-  setName,
-  setBio,
-  demo_mode,
-  toggleDemoMode,
-  showToast
-}: ProfileButtonProps) {
+export function ProfileButton() {
+  const name = useHabitStoreBase((s) => s.name);
+  const bio = useHabitStoreBase((s) => s.bio);
+  const demo_mode = useHabitStoreBase((s) => s.demo_mode);
+  const setName = useHabitStoreBase((s) => s.setName);
+  const setBio = useHabitStoreBase((s) => s.setBio);
+  const toggleDemoMode = useHabitStoreBase((s) => s.toggleDemoMode);
+  const showToast = useHabitStoreBase((s) => s.showToast);
+  
   const [isOpen, setIsOpen] = useState(false);
 
   return (

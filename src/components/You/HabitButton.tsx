@@ -1,17 +1,16 @@
 import { useState } from 'react';
+import { useHabitStoreBase } from '../../lib/store';
 import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
 import { FormField } from '../ui/FormField';
 
-interface HabitButtonProps {
-  habits: string[];
-  why: string;
-  setWhy: (why: string) => void;
-  setHabits: (habits: string[]) => void;
-  showToast: (message: string, onUndo: () => void) => void;
-}
-
-export function HabitButton({ habits, why, setWhy, setHabits, showToast }: HabitButtonProps) {
+export function HabitButton() {
+  const habits = useHabitStoreBase((s) => s.habits);
+  const why = useHabitStoreBase((s) => s.why);
+  const setWhy = useHabitStoreBase((s) => s.setWhy);
+  const setHabits = useHabitStoreBase((s) => s.setHabits);
+  const showToast = useHabitStoreBase((s) => s.showToast);
+  
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -48,12 +47,15 @@ export function HabitButton({ habits, why, setWhy, setHabits, showToast }: Habit
                   label=""
                   value={h}
                   onCommit={(v) => {
-                    const newHabits = [...habits];
+                    const currentHabits = useHabitStoreBase.getState().habits;
+                    const prevHabit = currentHabits[i];
+                    const newHabits = [...currentHabits];
                     newHabits[i] = v;
                     setHabits(newHabits);
                     showToast('habit updated', () => {
-                      newHabits[i] = h;
-                      setHabits([...newHabits]);
+                      const undoHabits = [...useHabitStoreBase.getState().habits];
+                      undoHabits[i] = prevHabit;
+                      setHabits(undoHabits);
                     });
                   }}
                   onShowToast={showToast}

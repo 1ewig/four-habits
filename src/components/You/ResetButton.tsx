@@ -1,22 +1,16 @@
 import { useState } from 'react';
+import { useHabitStoreBase } from '../../lib/store';
 import { motion } from 'motion/react';
 import { Info } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { TimePicker } from '../ui/TimePicker';
 
-interface ResetButtonProps {
-  reset_h: number;
-  reset_m: number;
-  setResetTime: (h: number, m: number) => void;
-  showToast: (message: string, onUndo: () => void) => void;
-}
-
-export function ResetButton({
-  reset_h,
-  reset_m,
-  setResetTime,
-  showToast
-}: ResetButtonProps) {
+export function ResetButton() {
+  const reset_h = useHabitStoreBase((s) => s.reset_h);
+  const reset_m = useHabitStoreBase((s) => s.reset_m);
+  const setResetTime = useHabitStoreBase((s) => s.setResetTime);
+  const showToast = useHabitStoreBase((s) => s.showToast);
+  
   const [isOpen, setIsOpen] = useState(false);
 
   const handleHoursChange = (h: number) => {

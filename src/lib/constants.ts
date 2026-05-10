@@ -53,3 +53,7 @@ export const BAR_CHART_HEIGHTS = {
   partial: '40%',
   rest: '15%',
 } as const;
+
+export const THEMES = [
+  'carbon', 'ghost', 'sand', 'birch', 'sakura', 'frost', 'arctic', 'bone', 'obsidian'
+] as const;

@@ -1,15 +1,14 @@
 import { useState } from 'react';
+import { useHabitStoreBase } from '../../lib/store';
+import { THEMES } from '../../lib/constants';
 import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
 import { Palette } from 'lucide-react';
 
-interface ThemeButtonProps {
-  themes: string[];
-  currentTheme: string;
-  onSelect: (theme: string) => void;
-}
-
-export function ThemeButton({ themes, currentTheme, onSelect }: ThemeButtonProps) {
+export function ThemeButton() {
+  const theme = useHabitStoreBase((s) => s.theme);
+  const setTheme = useHabitStoreBase((s) => s.setTheme);
+  
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -25,12 +24,12 @@ export function ThemeButton({ themes, currentTheme, onSelect }: ThemeButtonProps
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="evolution themes">
         <div className="grid grid-cols-2 gap-3">
-          {themes.map((t) => (
+          {THEMES.map((t) => (
             <button
               key={t}
-              onClick={() => onSelect(t)}
+              onClick={() => setTheme(t)}
               className={`theme-${t} p-4 rounded-[var(--radius-lg)] text-left transition-all border-2 flex items-center justify-between ${
-                currentTheme === t
+                theme === t
                   ? 'border-[var(--accent)] bg-[var(--surface-alt)] text-[var(--text)]'
                   : 'border-transparent bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-alt)]'
               }`}
