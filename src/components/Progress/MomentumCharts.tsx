@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { WEEKLY_DAYS, MONTHLY_DAYS, BAR_CHART_HEIGHTS } from '../../lib/constants';
+import { SegmentedControl } from '../ui/SegmentedControl';
 
 interface DayData {
   date: string;
@@ -20,19 +21,11 @@ export function MomentumCharts({ allDays, perfectDays, consistency }: MomentumCh
     <div style={{ flex: 3 }} className="min-h-0 bg-[var(--surface)] rounded-[var(--radius-xl)] p-5 flex flex-col">
       <div className="flex justify-between items-center mb-4 shrink-0">
         <h2 className="text-[var(--text-dim)] text-sm font-medium tracking-wide">momentum</h2>
-        <div className="flex gap-2">
-          {(['weekly', 'monthly', 'stats'] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className={`text-xs px-2 py-1 rounded-[var(--radius-full)] transition-colors ${
-                view === v ? 'bg-[var(--text)] text-[var(--bg)]' : 'bg-[var(--surface-alt)] text-[var(--text-dim)]'
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          options={['weekly', 'monthly', 'stats'] as const}
+          active={view}
+          onChange={setView}
+        />
       </div>
 
       <div className="flex-grow flex items-center justify-center min-h-0">

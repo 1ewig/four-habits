@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Modal } from './Modal';
-import { useUndoable } from '../../hooks/useUndoable';
-import { useUndoableArray } from '../../hooks/useUndoableArray';
+import { Modal } from '../ui/Modal';
+import { FormField } from '../ui/FormField';
 
 interface HabitButtonProps {
   habits: string[];
@@ -14,34 +13,6 @@ interface HabitButtonProps {
 
 export function HabitButton({ habits, why, setWhy, setHabits, showToast }: HabitButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const whyUndo = useUndoable({
-    initialValue: why,
-    onCommit: setWhy,
-    onShowToast: showToast,
-    commitMessage: 'why updated',
-  });
-
-  const habitsUndo = useUndoableArray({
-    initialValue: habits,
-    onCommit: setHabits,
-    onShowToast: showToast,
-    commitMessage: 'habits updated',
-  });
-
-  useEffect(() => {
-    if (!isOpen) {
-      whyUndo.reset();
-      habitsUndo.reset();
-    }
-  }, [isOpen]);
-
-  const handleKeyDown = (callback: () => void) => (e: { key: string; preventDefault: () => void }) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      callback();
-    }
-  };
 
   return (
     <>
@@ -58,30 +29,36 @@ export function HabitButton({ habits, why, setWhy, setHabits, showToast }: Habit
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="habits & system">
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[var(--text-dim)]">your why (50 chars max)</label>
-            <textarea
-              value={whyUndo.tempValue}
-              onChange={(e) => whyUndo.setTempValue(e.target.value)}
-              onBlur={() => whyUndo.commit(whyUndo.tempValue)}
-              onKeyDown={handleKeyDown(() => whyUndo.commit(whyUndo.tempValue))}
-              maxLength={50}
-              className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] resize-none outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              rows={2}
-            />
-          </div>
+          <FormField
+            label="your why (50 chars max)"
+            value={why}
+            onCommit={setWhy}
+            onShowToast={showToast}
+            commitMessage="why updated"
+            maxLength={50}
+            rows={2}
+            inputType="textarea"
+          />
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-[var(--text-dim)]">core habits (30 chars max)</label>
-            {habitsUndo.tempValue.map((h, i) => (
-              <div key={i} className="relative">
-                <input
+            {habits.map((h, i) => (
+              <div key={i}>
+                <FormField
+                  label=""
                   value={h}
-                  onChange={(e) => habitsUndo.setItem(i, e.target.value)}
-                  onBlur={() => habitsUndo.commitAll()}
-                  onKeyDown={handleKeyDown(() => habitsUndo.commitAll())}
+                  onCommit={(v) => {
+                    const newHabits = [...habits];
+                    newHabits[i] = v;
+                    setHabits(newHabits);
+                    showToast('habit updated', () => {
+                      newHabits[i] = h;
+                      setHabits([...newHabits]);
+                    });
+                  }}
+                  onShowToast={showToast}
+                  commitMessage="habit updated"
                   maxLength={30}
-                  className="w-full bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   placeholder={`habit ${i + 1}`}
                 />
               </div>

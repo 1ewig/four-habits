@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { NEURAL_WEB } from '../../lib/constants';
+import { SegmentedControl } from '../ui/SegmentedControl';
 
 interface DayData {
   date: string;
@@ -11,12 +12,13 @@ interface NeuralWebProps {
   allDays: DayData[];
 }
 
+type Pattern = 'sunflower' | 'tree' | 'lotus';
+
 export function NeuralWeb({ allDays }: NeuralWebProps) {
-  const [pattern, setPattern] = useState<'sunflower' | 'tree' | 'lotus'>('sunflower');
+  const [pattern, setPattern] = useState<Pattern>('sunflower');
 
   const nodes = useMemo(() => {
-    const total = allDays.length;
-    if (total === 0) return [];
+    if (allDays.length === 0) return [];
 
     const { centerX, centerY, goldenAngle, radiusMultiplier, restBoost, sunflower: sf, tree: tr, lotus: ls } = NEURAL_WEB;
 
@@ -44,7 +46,7 @@ export function NeuralWeb({ allDays }: NeuralWebProps) {
         y = centerY - Math.cos(angle) * radius + tr.yOffset;
         curve = tr.curve;
         parentId = i < 1 ? 0 : Math.floor((i - 1) / 2);
-      } else if (pattern === 'lotus') {
+      } else {
         const angle = i * 0.38;
         const radius = Math.sqrt(i) * ls.radiusMultiplier + Math.abs(Math.sin(i * ls.sineFrequency)) * ls.sineAmplitude + boost;
         x = centerX + Math.cos(angle) * radius;
@@ -57,7 +59,6 @@ export function NeuralWeb({ allDays }: NeuralWebProps) {
     });
   }, [allDays, pattern]);
 
-  // Generate paths between nodes
   const paths = useMemo(() => {
     const p = [];
     for (let i = 1; i < nodes.length; i++) {
@@ -65,7 +66,6 @@ export function NeuralWeb({ allDays }: NeuralWebProps) {
       const prev = nodes[curr.parentId];
       if (!prev) continue;
 
-      // Bezier curve control point
       const cx = (prev.x + curr.x) / 2 - (curr.y - prev.y) * curr.curve;
       const cy = (prev.y + curr.y) / 2 + (curr.x - prev.x) * curr.curve;
       
@@ -81,24 +81,15 @@ export function NeuralWeb({ allDays }: NeuralWebProps) {
     <div style={{ flex: 7 }} className="min-h-0 bg-[var(--surface)] rounded-[var(--radius-xl)] p-4 flex flex-col relative overflow-hidden">
       <div className="flex justify-between items-center z-10 mb-2">
         <h2 className="text-[var(--text-dim)] text-sm font-medium tracking-wide">neural web</h2>
-        <div className="flex gap-2">
-          {['sunflower', 'tree', 'lotus'].map((p) => (
-            <button
-              key={p}
-              onClick={() => setPattern(p as any)}
-              className={`text-xs px-2 py-1 rounded-[var(--radius-full)] transition-colors ${
-                pattern === p ? 'bg-[var(--accent)] text-[var(--bg)]' : 'bg-[var(--surface-alt)] text-[var(--text-dim)]'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          options={['sunflower', 'tree', 'lotus'] as const}
+          active={pattern}
+          onChange={setPattern}
+        />
       </div>
 
       <div className="flex-grow relative flex items-center justify-center">
         <svg viewBox="0 0 400 400" className="w-full h-full max-w-[400px] max-h-[400px]">
-          {/* Draw paths */}
           {paths.map((path, i) => (
             <motion.path
               key={`path-${i}`}
@@ -115,7 +106,6 @@ export function NeuralWeb({ allDays }: NeuralWebProps) {
             />
           ))}
 
-          {/* Draw nodes */}
           {nodes.map((node, i) => (
             <motion.circle
               key={`node-${node.id}`}

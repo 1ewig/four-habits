@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Info } from 'lucide-react';
-import { Modal } from './Modal';
+import { Modal } from '../ui/Modal';
 
 interface ResetButtonProps {
   reset_h: number;

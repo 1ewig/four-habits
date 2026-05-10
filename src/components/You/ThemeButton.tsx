@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Modal } from './Modal';
+import { Modal } from '../ui/Modal';
 import { Palette } from 'lucide-react';
 
 interface ThemeButtonProps {

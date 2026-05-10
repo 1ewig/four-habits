@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Modal } from './Modal';
-import { useUndoable } from '../../hooks/useUndoable';
+import { Modal } from '../ui/Modal';
+import { FormField } from '../ui/FormField';
+import { Toggle } from '../ui/Toggle';
 
 interface ProfileButtonProps {
   name: string;
@@ -24,20 +25,6 @@ export function ProfileButton({
 }: ProfileButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const nameUndo = useUndoable({
-    initialValue: name,
-    onCommit: setName,
-    onShowToast: showToast,
-    commitMessage: 'name updated',
-  });
-
-  const bioUndo = useUndoable({
-    initialValue: bio,
-    onCommit: setBio,
-    onShowToast: showToast,
-    commitMessage: 'bio updated',
-  });
-
   return (
     <>
       <motion.button
@@ -56,43 +43,30 @@ export function ProfileButton({
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="your identity">
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[var(--text-dim)]">name</label>
-            <input
-              value={nameUndo.tempValue}
-              onChange={(e) => nameUndo.setTempValue(e.target.value)}
-              onBlur={() => nameUndo.commit(nameUndo.tempValue)}
-              className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            />
-          </div>
+          <FormField
+            label="name"
+            value={name}
+            onCommit={setName}
+            onShowToast={showToast}
+            commitMessage="name updated"
+            maxLength={30}
+          />
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[var(--text-dim)]">short bio</label>
-            <input
-              value={bioUndo.tempValue}
-              onChange={(e) => bioUndo.setTempValue(e.target.value)}
-              onBlur={() => bioUndo.commit(bioUndo.tempValue)}
-              className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            />
-          </div>
+          <FormField
+            label="short bio"
+            value={bio}
+            onCommit={setBio}
+            onShowToast={showToast}
+            commitMessage="bio updated"
+            maxLength={50}
+          />
 
           <div className="flex items-center justify-between pt-4 border-t border-[var(--surface-alt)]">
             <div className="flex flex-col">
               <span className="text-sm font-medium text-[var(--text)]">developer profile</span>
               <span className="text-xs text-[var(--text-dim)]">enable 30-day random history for testing</span>
             </div>
-            <button
-              onClick={toggleDemoMode}
-              className={`w-12 h-6 rounded-[var(--radius-full)] p-1 transition-colors ${
-                demo_mode ? 'bg-[var(--accent)]' : 'bg-[var(--surface-alt)]'
-              }`}
-            >
-              <motion.div
-                className="w-4 h-4 bg-white rounded-[var(--radius-full)] shadow-sm"
-                animate={{ x: demo_mode ? 24 : 0 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              />
-            </button>
+            <Toggle checked={demo_mode} onChange={toggleDemoMode} />
           </div>
         </div>
       </Modal>
