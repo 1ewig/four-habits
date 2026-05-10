@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { TRANSITIONS } from '../../lib/animations';
 
 interface SegmentedControlProps<T extends string> {
   options: readonly T[];
@@ -30,7 +31,7 @@ export function SegmentedControl<T extends string>({
                 <motion.div
                   layoutId="nav-pill"
                   className="absolute inset-0 rounded-[var(--radius-full)] bg-[var(--accent)]"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                  transition={TRANSITIONS.segmentedControl}
                 />
               )}
               <span className="relative z-10 whitespace-nowrap">{option}</span>

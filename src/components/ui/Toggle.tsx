@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { TRANSITIONS } from '../../lib/animations';
 
 interface ToggleProps {
   checked: boolean;
@@ -16,7 +17,7 @@ export function Toggle({ checked, onChange }: ToggleProps) {
       <motion.div
         className="w-4 h-4 bg-white rounded-[var(--radius-full)] shadow-sm"
         animate={{ x: checked ? 24 : 0 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        transition={TRANSITIONS.toggle}
       />
     </button>
   );

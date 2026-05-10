@@ -4,6 +4,7 @@ import { SegmentedControl } from '../ui/SegmentedControl';
 import { useNodePositions } from '../../hooks/useNodePositions';
 import { usePaths } from '../../hooks/usePaths';
 import { useProgressData } from '../../hooks/useProgressData';
+import { TRANSITIONS, DELAYS } from '../../lib/animations';
 
 type Pattern = 'sunflower' | 'tree' | 'lotus';
 
@@ -38,7 +39,7 @@ export function NeuralWeb() {
                 pathLength: 1, 
                 opacity: path.isPerfect ? 0.8 : 0.25 
               }}
-              transition={{ duration: 1, delay: i * 0.05 }}
+              transition={{ ...TRANSITIONS.neuralPath, delay: i * DELAYS.neuralPath }}
             />
           ))}
 
@@ -62,7 +63,7 @@ export function NeuralWeb() {
                 scale: 1, 
                 opacity: node.status === 'rest' ? 0.6 : 1 
               }}
-              transition={{ type: 'spring', bounce: 0.4, delay: i * 0.05 }}
+              transition={{ ...TRANSITIONS.neuralNode, delay: i * DELAYS.neuralNode }}
               className={node.status === 'perfect' ? 'drop-shadow-[0_0_8px_var(--accent)]' : ''}
             />
           ))}

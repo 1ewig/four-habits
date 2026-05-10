@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { WEEKLY_DAYS, MONTHLY_DAYS, BAR_CHART_HEIGHTS } from '../../lib/constants';
+import { TRANSITIONS, DELAYS } from '../../lib/animations';
 import { SegmentedControl } from '../ui/SegmentedControl';
 import { useProgressData } from '../../hooks/useProgressData';
 
@@ -39,7 +40,7 @@ export function MomentumCharts() {
                   className={`flex-1 rounded-t-[var(--radius-sm)] ${bg}`}
                   initial={{ height: 0 }}
                   animate={{ height }}
-                  transition={{ type: 'spring', bounce: 0.3, delay: i * 0.1 }}
+                  transition={{ ...TRANSITIONS.barChart, delay: i * DELAYS.barChart }}
                 />
               );
             })}

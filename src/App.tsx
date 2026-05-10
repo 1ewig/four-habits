@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useHabitStore } from './lib/store';
+import { TRANSITIONS } from './lib/animations';
 import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { Progress } from './pages/Progress';
@@ -17,7 +18,6 @@ export default function App() {
 
   const isPerfectDay = today_done.every(Boolean);
 
-  // Apply theme class to body
   useEffect(() => {
     document.body.className = `theme-${theme}`;
   }, [theme]);
@@ -30,7 +30,7 @@ export default function App() {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.02 }}
-          transition={{ duration: 0.2, ease: 'easeInOut' }}
+          transition={TRANSITIONS.page}
           className="h-full w-full absolute inset-0"
         >
           {activePage === 'home' && <Home />}
