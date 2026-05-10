@@ -27,7 +27,7 @@ export function ResetButton() {
 
   return (
     <>
-      <SettingsCard onClick={() => setIsOpen(true)} className="col-span-2 p-6 items-center justify-between text-left">
+      <SettingsCard onClick={() => setIsOpen(true)} className="p-6 items-center justify-between text-left">
         <div className="flex flex-col">
           <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">reset time</span>
           <span className="text-2xl font-bold text-[var(--text)]">
