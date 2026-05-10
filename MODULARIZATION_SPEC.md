@@ -182,36 +182,39 @@ showToast('Saved', () => onChange(previousValue));
 
 ---
 
-### Phase 3: UI Primitives
-
-**Rationale:** Reusable UI building blocks. Depends on hooks and constants.
+### Phase 3: UI Primitives ✅
 
 **Deliverables:**
 
-1. **`src/components/ui/SegmentedControl.tsx`** — Reusable tab selector
+1. **`src/components/ui/SegmentedControl.tsx`** ✅ — Reusable tab selector
    - Props: `options`, `active`, `onChange`
    - Variants: `default`, `nav`, `compact`
 
-2. **`src/components/ui/ModalButton.tsx`** — Button + Modal wrapper
+2. **`src/components/ui/ModalButton.tsx`** ✅ — Button + Modal wrapper
    - Combines open/close state management
    - Props: `trigger`, `title`, `children`, `onClose`
 
-3. **`src/components/ui/FormField.tsx`** — Reusable form input
+3. **`src/components/ui/FormField.tsx`** ✅ — Reusable form input
    - Props: `label`, `value`, `onChange`, `maxLength`, `placeholder`, `rows`
    - Handles temp state sync and blur commit
 
-4. **`src/components/ui/Toast.tsx`** — Generic toast notification
+4. **`src/components/ui/Toast.tsx`** ✅ — Generic toast notification
    - Props: `message`, `onUndo`, `onDismiss`
 
-5. **`src/components/ui/IconButton.tsx`** — Reusable animated button
+5. **`src/components/ui/IconButton.tsx`** ✅ — Reusable animated button
    - Built-in whileTap animation
-   - Props: `icon`, `onClick`, `variant`
+   - Props: `icon`, `onClick`, `variant`, `size`
 
-6. **`src/components/ui/TimePicker.tsx`** — Hour/minute selector
+6. **`src/components/ui/TimePicker.tsx`** ✅ — Hour/minute selector
+   - Props: `hours`, `minutes`, `onHoursChange`, `onMinutesChange`
    - Extract from ResetButton.tsx
 
-7. **`src/components/ui/Toggle.tsx`** — Boolean toggle switch
-   - Extract from ProfileButton.tsx
+7. **`src/components/ui/Toggle.tsx`** ✅ — Boolean toggle switch
+   - Props: `checked`, `onChange`
+
+8. **`src/components/ui/Modal.tsx`** ✅ — Centered modal with max-width
+   - Props: `isOpen`, `onClose`, `title`, `children`
+   - Slide-up animation from bottom
 
 ---
 
