@@ -1,7 +1,6 @@
 import { useHabitStoreBase } from '../../lib/store';
+import { MOOD_EMOJIS } from '../../lib/constants';
 import { motion } from 'motion/react';
-
-const EMOJIS = ['😞', '😐', '🤩'];
 
 export function MoodPicker() {
   const viewDate = useHabitStoreBase((s) => s.viewDate);
@@ -26,8 +25,8 @@ export function MoodPicker() {
       <span className="text-[var(--text-dim)] text-sm font-medium pl-2">
         how did {isToday ? 'today' : 'yesterday'} feel?
       </span>
-      <div className="flex gap-2">
-        {EMOJIS.map((emoji) => (
+<div className="flex gap-2">
+          {MOOD_EMOJIS.map((emoji) => (
           <motion.button
             key={emoji}
             onClick={() => handleSelect(emoji)}
