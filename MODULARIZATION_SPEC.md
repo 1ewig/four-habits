@@ -253,50 +253,24 @@ src/
 
 ---
 
-### Phase 6: Component Refactoring
-
-**Rationale:** Refactor existing components to use new primitives.
+### Phase 6: Component Refactoring ✅
 
 **Deliverables:**
 
-1. **Refactor `ProfileButton.tsx`**
-   - Replace state with `useUndoable`
-   - Use `FormField` for inputs
-   - Use `Toggle` for demo toggle
+1. **Extract NeuralWeb calculations** ✅
+   - `hooks/useNodePositions.ts` — node position calculations
+   - `hooks/usePaths.ts` — SVG path generation
 
-2. **Refactor `HabitButton.tsx`**
-   - Replace state with `useUndoable`
-   - Use `FormField` for textareas
+2. **Extract Progress data** ✅
+   - `hooks/useProgressData.ts` — allDays, perfectDays, consistency
 
-3. **Refactor `ResetButton.tsx`**
-   - Use `TimePicker` component
+3. **Refactor Progress.tsx** ✅
+   - Uses `useProgressData` hook
+   - Removed manual data aggregation
 
-4. **Refactor `ThemeButton.tsx`**
-   - Use `ModalButton` wrapper
-
-5. **Refactor `NeuralWeb.tsx`**
-   - Extract node calculation to `useNodePositions` hook
-   - Extract path calculation to `usePaths` hook
-   - Use `SegmentedControl`
-
-6. **Refactor `MomentumCharts.tsx`**
-   - Extract bar chart to `BarChart` component
-   - Extract grid chart to `GridChart` component
-   - Use `SegmentedControl`
-
-7. **Refactor `Navigation.tsx`**
-   - Use `SegmentedControl` or `IconButton`
-
-8. **Refactor `Home.tsx`**
-   - Use `useHaptic` hook
-   - Use constants from `constants.ts`
-
-9. **Refactor `Progress.tsx`**
-   - Extract data aggregation to custom hook or selector
-
-10. **Refactor `You.tsx`**
-    - Remove toast state (use context or pass from parent)
-    - Use `ModalButton` for each setting
+4. **Refactor NeuralWeb.tsx** ✅
+   - Uses `useNodePositions` and `usePaths` hooks
+   - Component is now purely UI
 
 ---
 
