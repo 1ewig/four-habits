@@ -20,6 +20,7 @@ export interface HabitState {
   bio: string;
   demo_mode: boolean;
   demo_history: Record<string, boolean[]>;
+  viewDate: string;
 
   // Actions
   setHabits: (habits: string[]) => void;
@@ -34,6 +35,8 @@ export interface HabitState {
   setBio: (bio: string) => void;
   checkReset: () => void;
   toggleDemoMode: () => void;
+  setViewDate: (date: string) => void;
+  syncViewDate: () => void;
 }
 
 const DEFAULT_DATA = {
@@ -51,6 +54,7 @@ const DEFAULT_DATA = {
   bio: 'building momentum',
   demo_mode: false,
   demo_history: {},
+  viewDate: getTodayStr(),
 };
 
 export const useHabitStoreBase = create<HabitState>()(
@@ -115,6 +119,13 @@ export const useHabitStoreBase = create<HabitState>()(
           }));
         }
       },
+      setViewDate: (date) => set({ viewDate: date }),
+      syncViewDate: () => {
+        const state = get();
+        if (!state.late_logging) {
+          set({ viewDate: state.today_date });
+        }
+      },
       toggleDemoMode: () => {
         const state = get();
         if (!state.demo_mode) {
@@ -136,11 +147,13 @@ export function useHabitStore() {
   const store = useHabitStoreBase();
   
   useEffect(() => {
-    // Check reset once on mount
     store.checkReset();
+    store.syncViewDate();
     
-    // Check reset when window gains focus
-    const onFocus = () => store.checkReset();
+    const onFocus = () => {
+      store.checkReset();
+      store.syncViewDate();
+    };
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
