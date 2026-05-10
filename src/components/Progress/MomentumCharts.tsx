@@ -2,19 +2,10 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { WEEKLY_DAYS, MONTHLY_DAYS, BAR_CHART_HEIGHTS } from '../../lib/constants';
 import { SegmentedControl } from '../ui/SegmentedControl';
+import { useProgressData } from '../../hooks/useProgressData';
 
-interface DayData {
-  date: string;
-  status: 'perfect' | 'partial' | 'rest';
-}
-
-interface MomentumChartsProps {
-  allDays: DayData[];
-  perfectDays: number;
-  consistency: number;
-}
-
-export function MomentumCharts({ allDays, perfectDays, consistency }: MomentumChartsProps) {
+export function MomentumCharts() {
+  const { allDays, perfectDays, consistency } = useProgressData();
   const [view, setView] = useState<'weekly' | 'monthly' | 'stats'>('weekly');
 
   return (

@@ -3,19 +3,12 @@ import { motion } from 'motion/react';
 import { SegmentedControl } from '../ui/SegmentedControl';
 import { useNodePositions } from '../../hooks/useNodePositions';
 import { usePaths } from '../../hooks/usePaths';
-
-interface DayData {
-  date: string;
-  status: 'perfect' | 'partial' | 'rest';
-}
-
-interface NeuralWebProps {
-  allDays: DayData[];
-}
+import { useProgressData } from '../../hooks/useProgressData';
 
 type Pattern = 'sunflower' | 'tree' | 'lotus';
 
-export function NeuralWeb({ allDays }: NeuralWebProps) {
+export function NeuralWeb() {
+  const { allDays } = useProgressData();
   const [pattern, setPattern] = useState<Pattern>('sunflower');
   const nodes = useNodePositions(allDays, pattern);
   const paths = usePaths(nodes);
