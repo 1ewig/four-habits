@@ -16,7 +16,7 @@ export function UndoToast({ message, visible, onUndo, onClose }: UndoToastProps)
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
-          className="fixed bottom-24 left-0 right-0 mx-auto w-max z-50 flex items-center gap-4 bg-[var(--text)] text-[var(--bg)] px-5 py-3 rounded-[var(--radius-full)] shadow-xl"
+          className="fixed bottom-24 left-0 right-0 mx-auto w-max z-[90] flex items-center gap-4 bg-[var(--text)] text-[var(--bg)] px-5 py-3 rounded-[var(--radius-full)] shadow-xl"
         >
           <span className="text-sm font-medium">{message}</span>
           <div className="w-px h-4 bg-[var(--bg)] opacity-20" />

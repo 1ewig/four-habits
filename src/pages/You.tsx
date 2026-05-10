@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHabitStore } from '../lib/store';
 import { UndoToast } from '../components/You/UndoToast';
 import { HabitButton } from '../components/You/HabitButton';
@@ -21,6 +21,13 @@ export function You() {
   } = useHabitStore();
 
   const [toast, setToast] = useState<{ message: string; onUndo: () => void } | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const showToast = (message: string, onUndo: () => void) => {
     setToast({ message, onUndo });
