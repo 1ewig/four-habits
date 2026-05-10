@@ -1,6 +1,6 @@
 # Four Habits — AI-Accelerated React Development Portfolio Project
 
-> A premium momentum-based identity system and habit tracker built with modern React, featuring generative data visualization and AI-ready architecture.
+> A premium momentum-based identity system and habit tracker built with modern React, featuring generative data visualization and modular architecture with clear separation of concerns.
 
 ---
 
@@ -29,36 +29,59 @@ The application transforms daily consistency into an engaging, visually rewardin
 
 ---
 
-## Architecture
+## Architecture — Clean Separation of Concerns
 
 ```
 src/
-├── main.tsx                 # React 19 entry with StrictMode
-├── App.tsx                  # Root with page routing
-├── index.css                # Tailwind 4 + CSS custom properties
-├── lib/
-│   └── store.ts             # Zustand store with persistence
-├── pages/
-│   ├── Home.tsx             # Main habit tracking
-│   ├── Progress.tsx         # Analytics & visualization
-│   └── You.tsx              # Settings & customization
-└── components/
-    ├── Header.tsx           # Date display with navigation
-    ├── Navigation.tsx       # Bottom tab bar with animations
-    ├── Home/
-    │   ├── HabitGrid.tsx    # Animated 2x2 grid
-    │   ├── HabitCard.tsx    # Individual habit button
-    │   └── MoodPicker.tsx   # Mood logging component
-    ├── Progress/
-    │   ├── NeuralWeb.tsx       # Generative SVG visualization
-    │   └── MomentumCharts.tsx  # Analytics charts
-    └── You/
-        ├── Modal.tsx           # Reusable modal component
-        ├── ProfileButton.tsx   # Identity settings
-        ├── HabitButton.tsx     # Habit customization
-        ├── ThemeButton.tsx     # Theme selector
-        ├── ResetButton.tsx     # Day reset configuration
-        └── UndoToast.tsx        # Action feedback toast
+├── components/
+│   └── ui/                     # 8 reusable UI primitives
+│       ├── Modal.tsx           # Slide-up modal with animation
+│       ├── SegmentedControl.tsx # Tab selector (default/nav variants)
+│       ├── FormField.tsx        # Labeled input with undo pattern
+│       ├── Toggle.tsx           # Animated boolean switch
+│       ├── TimePicker.tsx       # Hour/minute selector
+│       ├── IconButton.tsx       # Animated icon button
+│       ├── Toast.tsx            # Notification display
+│       └── ModalButton.tsx       # Button + Modal wrapper
+├── hooks/                       # 9 custom hooks
+│   ├── useHaptic.ts             # Vibration patterns
+│   ├── useUndoable.ts           # Undo pattern for single values
+│   ├── useUndoableArray.ts      # Undo pattern for arrays
+│   ├── useToast.ts              # Toast state management
+│   ├── useNodePositions.ts      # Neural Web node calculations
+│   ├── usePaths.ts              # SVG path generation
+│   └── useProgressData.ts       # Data aggregation for analytics
+├── lib/                         # 4 utility modules
+│   ├── constants.ts             # Magic numbers, config objects
+│   ├── dateUtils.ts             # Date formatting/parsing
+│   ├── themes.ts                # Theme metadata (emoji, name)
+│   └── habitUtils.ts            # Habit calculations, status detection
+├── pages/                       # 3 pages (UI only)
+├── store.ts                     # Zustand store with selectors
+└── App.tsx                      # Root component
+```
+
+---
+
+## Architecture Pattern
+
+```
+UI Component → Hook (stateful logic) → Utility/Constants (pure functions)
+     ↓
+  Zustand Store (state management + selectors)
+```
+
+**Flow Example:**
+```
+NeuralWeb component (UI)
+    ↓ uses
+useNodePositions hook (calculation) + usePaths hook (path generation)
+    ↓ uses
+constants.ts (NEURAL_WEB config)
+    ↓ uses
+useProgressData hook (data aggregation)
+    ↓ reads
+Zustand store (via selectors)
 ```
 
 ---
@@ -116,28 +139,40 @@ This project demonstrates AI-assisted development practices:
    - Environment variable setup for API keys
    - Store architecture prepared for AI-powered insights
 
-### Design Patterns
+### Modular Architecture (6-Phase Refactoring)
 
-**State Management (Zustand)**:
+The codebase underwent systematic modularization:
+
+| Phase | Focus | Result |
+|-------|-------|--------|
+| **Phase 1** | Constants & Utilities | Pure functions in `lib/` |
+| **Phase 2** | Custom Hooks | Stateful logic abstracted |
+| **Phase 3** | UI Primitives | 8 reusable components |
+| **Phase 4** | Utility Modules | Business logic extracted |
+| **Phase 5** | Store Enhancement | Selector hooks for optimization |
+| **Phase 6** | Component Refactoring | Pure UI components |
+
+### State Management (Zustand)
+
 ```typescript
-persist(
-  (set, get) => ({
-    habits: ['sweat.', 'build.', 'read.', 'fast.'],
-    history: {},
-    today_done: [false, false, false, false],
-    checkReset: () => { /* logical day calculation */ },
-    // ... actions
-  }),
-  { name: 'habit_v4' }
-)
+// Store with selectors for optimized re-renders
+export function useIsPerfectDay() {
+  return useHabitStoreBase((s) => s.today_done.every(Boolean));
+}
+
+export function useActiveHistory() {
+  return useHabitStoreBase((s) => s.demo_mode ? s.demo_history : s.history);
+}
 ```
 
-**Key Patterns Implemented**:
-- Compound components (Modal, ProfileButton, ThemeButton)
-- CSS variables theming with className injection
-- Motion's `layoutId` for smooth tab transitions
-- Memoized calculations for expensive visualizations
-- Hook composition with custom listeners
+### Key Patterns Implemented
+
+- **Separation of Concerns**: UI → Hooks → Utilities → Constants
+- **Selector Pattern**: Optimized subscriptions prevent unnecessary re-renders
+- **Hook Composition**: Custom hooks abstract complex logic
+- **CSS Variables Theming**: 9-theme architecture via className injection
+- **Motion's `layoutId`**: Smooth tab transitions
+- **Memoized Calculations**: `useMemo` for expensive SVG/analytics
 
 ### Complex Algorithms
 
@@ -153,11 +188,11 @@ const radius = Math.sqrt(i) * 28 + restBoost;
 
 ## Performance Optimizations
 
-- Decoupled visualization logic from state updates
-- Memoized SVG calculations via `useMemo`
-- Motion's `AnimatePresence` for efficient unmount animations
-- Lazy component patterns
-- TypeScript strict mode for type safety
+- **Selector hooks**: Components subscribe to specific slices, not entire store
+- **Memoized SVG calculations**: `useMemo` for Neural Web nodes/paths
+- **Decoupled visualization**: Pure calculation hooks separated from UI
+- **Motion's `AnimatePresence`**: Efficient unmount animations
+- **TypeScript strict mode**: Full type coverage with no implicit any
 
 ---
 
@@ -181,13 +216,26 @@ npm run lint
 | Skill Demonstrated | Evidence |
 |-------------------|----------|
 | **React 19 Mastery** | Latest features, StrictMode, concurrent patterns |
-| **State Architecture** | Zustand with persistence, complex derived state |
-| **Data Visualization** | Custom generative SVG algorithms |
+| **Modular Architecture** | 6-phase refactoring, clean separation of concerns |
+| **State Management** | Zustand with persist, selector hooks for optimization |
+| **Data Visualization** | Custom generative SVG algorithms (golden angle, binary tree) |
+| **Custom Hooks** | 9 hooks covering state, calculations, and utilities |
+| **UI Primitives** | 8 reusable components in `ui/` folder |
 | **Design System** | 9-theme architecture with CSS variables |
 | **Animation UX** | 60fps Motion animations, haptic feedback |
 | **TypeScript** | Strict mode, full type coverage |
 | **AI Integration** | Gemini SDK configured, AI-assisted development |
-| **Performance** | Memoization, lazy patterns, optimized renders |
+| **Performance** | Memoization, selector pattern, optimized renders |
+
+---
+
+## Project Statistics
+
+- **6 phases** of systematic modularization
+- **9 custom hooks** for logic abstraction
+- **8 UI primitives** for reusable components
+- **4 utility modules** for pure functions
+- **~150 lines** in Zustand store (well-organized, no over-engineering)
 
 ---
 
