@@ -3,7 +3,6 @@ import { useHabitStoreBase } from '../../lib/store';
 import { Modal } from '../ui/Modal';
 import { SettingsCard } from '../ui/SettingsCard';
 import { TimePicker } from '../ui/TimePicker';
-import { Info } from 'lucide-react';
 
 export function ResetButton() {
   const reset_h = useHabitStoreBase((s) => s.reset_h);
@@ -27,16 +26,11 @@ export function ResetButton() {
 
   return (
     <>
-      <SettingsCard onClick={() => setIsOpen(true)} className="p-6 items-center justify-between text-left">
-        <div className="flex flex-col">
-          <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">reset time</span>
-          <span className="text-2xl font-bold text-[var(--text)]">
-            {reset_h.toString().padStart(2, '0')}:{reset_m.toString().padStart(2, '0')}
-          </span>
-        </div>
-        <div className="bg-[var(--surface-alt)] p-2 rounded-full text-[var(--text-dim)]">
-          <Info className="w-5 h-5" />
-        </div>
+      <SettingsCard onClick={() => setIsOpen(true)} className="p-6 flex-col items-center justify-center text-center">
+        <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">reset time</span>
+        <span className="text-2xl font-bold text-[var(--text)]">
+          {reset_h.toString().padStart(2, '0')}:{reset_m.toString().padStart(2, '0')}
+        </span>
       </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="system settings">
