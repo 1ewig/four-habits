@@ -241,7 +241,7 @@ npm run lint
 
 ## Source Code
 
-**GitHub**: `https://github.com/[username]/four-habits`
+**GitHub**: `https://github.com/1ewig/Four-Habits`
 
 ---
 

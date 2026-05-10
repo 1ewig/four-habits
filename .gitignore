@@ -136,3 +136,7 @@ Thumbs.db
 dist
 dist-ssr
 *.local
+
+# Portfolio / Documentation
+PORTFOLIO*.md
+MODULARIZATION*.md
