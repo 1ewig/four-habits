@@ -147,3 +147,33 @@ export function useHabitStore() {
 
   return store;
 }
+
+// Selector hooks for optimized re-renders
+export function useIsPerfectDay() {
+  return useHabitStoreBase((s) => s.today_done.every(Boolean));
+}
+
+export function useActiveHistory() {
+  return useHabitStoreBase((s) => s.demo_mode ? s.demo_history : s.history);
+}
+
+export function useDayDone(date: string) {
+  return useHabitStoreBase((s) => 
+    date === s.today_date 
+      ? s.today_done 
+      : (s.demo_mode ? s.demo_history : s.history)[date] || getEmptyTodayDone()
+  );
+}
+
+// Utility functions (not hooks - use in useMemo or handlers)
+export function isPerfectDay(today_done: boolean[]): boolean {
+  return today_done.every(Boolean);
+}
+
+export function getActiveHistory(
+  demo_mode: boolean,
+  demo_history: Record<string, boolean[]>,
+  history: Record<string, boolean[]>
+): Record<string, boolean[]> {
+  return demo_mode ? demo_history : history;
+}
