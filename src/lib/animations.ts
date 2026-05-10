@@ -36,8 +36,9 @@ export const TRANSITIONS = {
   } as Transition,
 
   barChart: {
-    duration: 0.5,
-    ease: [0.25, 0.1, 0.25, 1],
+    type: 'spring',
+    stiffness: 100,
+    damping: 20,
   } as Transition,
 
   neuralPath: {
