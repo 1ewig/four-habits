@@ -122,9 +122,7 @@ export const useHabitStoreBase = create<HabitState>()(
       setViewDate: (date) => set({ viewDate: date }),
       syncViewDate: () => {
         const state = get();
-        if (!state.late_logging) {
-          set({ viewDate: state.today_date });
-        }
+        set({ viewDate: state.today_date });
       },
       toggleDemoMode: () => {
         const state = get();
@@ -152,7 +150,6 @@ export function useHabitStore() {
     
     const onFocus = () => {
       store.checkReset();
-      store.syncViewDate();
     };
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
