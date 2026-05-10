@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { getThemeEmoji } from '../lib/themes';
 
 interface NavigationProps {
   activePage: string;
@@ -7,31 +8,8 @@ interface NavigationProps {
   theme: string;
 }
 
-const THEME_EMOJIS: Record<string, string> = {
-  carbon: '⚫',
-  void: '⚫',
-  ghost: '⚪',
-  moss: '🟢',
-  copper: '🟤',
-  sand: '🟡',
-  silver: '⚪',
-  tide: '🔵',
-  ember: '🟠',
-  emerald: '🟢',
-  dusk: '🟣',
-  slate: '⚫',
-  ruby: '🔴',
-  birch: '⚪',
-  amethyst: '🟣',
-  frost: '🔵',
-  obsidian: '⚫',
-  solar: '🟡',
-  bone: '⚪',
-  supernova: '🟡'
-};
-
 export function Navigation({ activePage, setActivePage, isPerfectDay, theme }: NavigationProps) {
-  const emoji = THEME_EMOJIS[theme] || '🔵';
+  const emoji = getThemeEmoji(theme);
   const navItems = [
     { id: 'home', label: isPerfectDay ? `perfect ${emoji}` : 'habits' },
     { id: 'progress', label: 'progress' },

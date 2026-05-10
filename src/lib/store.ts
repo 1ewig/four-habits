@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useEffect } from 'react';
+import { HABITS_COUNT, DEMO_HISTORY_DAYS } from './constants';
+import { generateDemoHistory, getDefaultHabits, getEmptyTodayDone, getStatusFromBooleans } from './habitUtils';
+import { getTodayStr, getLogicalDate } from './dateUtils';
 
 export interface HabitState {
   habits: string[];
@@ -34,11 +37,11 @@ export interface HabitState {
 }
 
 const DEFAULT_DATA = {
-  habits: ['sweat.', 'build.', 'read.', 'fast.'],
+  habits: getDefaultHabits(),
   history: {},
   feelings: {},
-  today_done: [false, false, false, false],
-  today_date: new Date().toISOString().split('T')[0],
+  today_done: getEmptyTodayDone(),
+  today_date: getTodayStr(),
   reset_h: 0,
   reset_m: 0,
   why: 'to become the best version of myself.',
@@ -70,14 +73,14 @@ export const useHabitStoreBase = create<HabitState>()(
         
         if (state.demo_mode) {
           const newDemoHistory = { ...state.demo_history };
-          const dayDone = newDemoHistory[date] ? [...newDemoHistory[date]] : [false, false, false, false];
+          const dayDone = newDemoHistory[date] ? [...newDemoHistory[date]] : getEmptyTodayDone();
           dayDone[index] = !dayDone[index];
           newDemoHistory[date] = dayDone;
           return { demo_history: newDemoHistory };
         }
 
         const newHistory = { ...state.history };
-        const dayDone = newHistory[date] ? [...newHistory[date]] : [false, false, false, false];
+        const dayDone = newHistory[date] ? [...newHistory[date]] : getEmptyTodayDone();
         dayDone[index] = !dayDone[index];
         newHistory[date] = dayDone;
         return { history: newHistory };
@@ -102,44 +105,20 @@ export const useHabitStoreBase = create<HabitState>()(
       checkReset: () => {
         const state = get();
         const now = new Date();
-        const resetTime = new Date(now);
-        resetTime.setHours(state.reset_h, state.reset_m, 0, 0);
-
-        let logicalDate = new Date(now);
-        if (now < resetTime) {
-          logicalDate.setDate(logicalDate.getDate() - 1);
-        }
-        const todayStr = logicalDate.toISOString().split('T')[0];
+        const todayStr = getLogicalDate(now, state.reset_h, state.reset_m);
 
         if (state.today_date !== todayStr) {
           set((prev) => ({
             history: { ...prev.history, [prev.today_date]: [...prev.today_done] },
             today_date: todayStr,
-            today_done: [false, false, false, false],
+            today_done: getEmptyTodayDone(),
           }));
         }
       },
       toggleDemoMode: () => {
         const state = get();
         if (!state.demo_mode) {
-          // Generate demo data if it doesn't exist
-          const demo_history: Record<string, boolean[]> = {};
-          const now = new Date();
-          for (let i = 1; i <= 30; i++) {
-            const date = new Date(now);
-            date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split('T')[0];
-            const rand = Math.random();
-            let done: boolean[];
-            if (rand < 0.4) done = [true, true, true, true];
-            else if (rand < 0.8) {
-              const count = Math.floor(Math.random() * 3) + 1;
-              done = [false, false, false, false];
-              const indices = [0, 1, 2, 3].sort(() => 0.5 - Math.random());
-              for (let j = 0; j < count; j++) done[indices[j]] = true;
-            } else done = [false, false, false, false];
-            demo_history[dateStr] = done;
-          }
+          const demo_history = generateDemoHistory(DEMO_HISTORY_DAYS);
           set({ demo_mode: true, demo_history });
         } else {
           set({ demo_mode: false });

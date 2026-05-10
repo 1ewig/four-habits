@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Modal } from './Modal';
+import { useUndoable } from '../../hooks/useUndoable';
 
 interface ProfileButtonProps {
   name: string;
@@ -22,8 +23,20 @@ export function ProfileButton({
   showToast
 }: ProfileButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [tempName, setTempName] = useState(name);
-  const [tempBio, setTempBio] = useState(bio);
+
+  const nameUndo = useUndoable({
+    initialValue: name,
+    onCommit: setName,
+    onShowToast: showToast,
+    commitMessage: 'name updated',
+  });
+
+  const bioUndo = useUndoable({
+    initialValue: bio,
+    onCommit: setBio,
+    onShowToast: showToast,
+    commitMessage: 'bio updated',
+  });
 
   return (
     <>
@@ -46,18 +59,9 @@ export function ProfileButton({
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-[var(--text-dim)]">name</label>
             <input
-              value={tempName}
-              onChange={(e) => setTempName(e.target.value)}
-              onBlur={() => {
-                if (tempName !== name) {
-                  const prev = name;
-                  setName(tempName);
-                  showToast('name updated', () => {
-                    setName(prev);
-                    setTempName(prev);
-                  });
-                }
-              }}
+              value={nameUndo.tempValue}
+              onChange={(e) => nameUndo.setTempValue(e.target.value)}
+              onBlur={() => nameUndo.commit(nameUndo.tempValue)}
               className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
             />
           </div>
@@ -65,18 +69,9 @@ export function ProfileButton({
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-[var(--text-dim)]">short bio</label>
             <input
-              value={tempBio}
-              onChange={(e) => setTempBio(e.target.value)}
-              onBlur={() => {
-                if (tempBio !== bio) {
-                  const prev = bio;
-                  setBio(tempBio);
-                  showToast('bio updated', () => {
-                    setBio(prev);
-                    setTempBio(prev);
-                  });
-                }
-              }}
+              value={bioUndo.tempValue}
+              onChange={(e) => bioUndo.setTempValue(e.target.value)}
+              onBlur={() => bioUndo.commit(bioUndo.tempValue)}
               className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
             />
           </div>

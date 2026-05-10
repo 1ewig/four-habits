@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
+import { NEURAL_WEB } from '../../lib/constants';
 
 interface DayData {
   date: string;
@@ -13,45 +14,43 @@ interface NeuralWebProps {
 export function NeuralWeb({ allDays }: NeuralWebProps) {
   const [pattern, setPattern] = useState<'sunflower' | 'tree' | 'lotus'>('sunflower');
 
-  // Generate SVG nodes based on pattern
   const nodes = useMemo(() => {
     const total = allDays.length;
     if (total === 0) return [];
 
-    const centerX = 200;
-    const centerY = 200;
+    const { centerX, centerY, goldenAngle, radiusMultiplier, restBoost, sunflower: sf, tree: tr, lotus: ls } = NEURAL_WEB;
 
     return allDays.map((day, i) => {
       let x = centerX;
       let y = centerY;
       let curve = 0;
       let parentId = 0;
-      const restBoost = day.status === 'rest' ? 8 : 0;
+      const boost = day.status === 'rest' ? restBoost : 0;
 
       if (pattern === 'sunflower') {
-        const angle = i * 2.39996323; // Golden angle in radians
-        const radius = Math.sqrt(i) * 28 + restBoost;
+        const angle = i * goldenAngle;
+        const radius = Math.sqrt(i) * radiusMultiplier + boost;
         x = centerX + Math.cos(angle) * radius;
         y = centerY + Math.sin(angle) * radius;
-        curve = 0.3;
-        parentId = Math.max(0, i - 13);
+        curve = sf.curve;
+        parentId = Math.max(0, i - sf.parentOffset);
       } else if (pattern === 'tree') {
         const depth = Math.floor(Math.log2(i + 1));
         const posInLevel = i - (Math.pow(2, depth) - 1);
         const totalInLevel = Math.pow(2, depth);
         const angle = ((posInLevel + 0.5) / totalInLevel) * Math.PI - (Math.PI / 2);
-        const radius = depth * 45 + restBoost;
+        const radius = depth * tr.depthRadius + boost;
         x = centerX + Math.sin(angle) * radius;
-        y = centerY - Math.cos(angle) * radius + 60;
-        curve = 0.2;
+        y = centerY - Math.cos(angle) * radius + tr.yOffset;
+        curve = tr.curve;
         parentId = i < 1 ? 0 : Math.floor((i - 1) / 2);
       } else if (pattern === 'lotus') {
         const angle = i * 0.38;
-        const radius = Math.sqrt(i) * 24 + Math.abs(Math.sin(i * 0.3)) * 32 + restBoost;
+        const radius = Math.sqrt(i) * ls.radiusMultiplier + Math.abs(Math.sin(i * ls.sineFrequency)) * ls.sineAmplitude + boost;
         x = centerX + Math.cos(angle) * radius;
         y = centerY + Math.sin(angle) * radius;
-        curve = 0.35;
-        parentId = Math.max(0, i - 1);
+        curve = ls.curve;
+        parentId = Math.max(0, i - ls.parentOffset);
       }
 
       return { ...day, x, y, curve, parentId, id: i };

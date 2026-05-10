@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Modal } from './Modal';
+import { useUndoable } from '../../hooks/useUndoable';
+import { useUndoableArray } from '../../hooks/useUndoableArray';
 
 interface HabitButtonProps {
   habits: string[];
@@ -12,15 +14,34 @@ interface HabitButtonProps {
 
 export function HabitButton({ habits, why, setWhy, setHabits, showToast }: HabitButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [tempHabits, setTempHabits] = useState(habits);
-  const [tempWhy, setTempWhy] = useState(why);
+
+  const whyUndo = useUndoable({
+    initialValue: why,
+    onCommit: setWhy,
+    onShowToast: showToast,
+    commitMessage: 'why updated',
+  });
+
+  const habitsUndo = useUndoableArray({
+    initialValue: habits,
+    onCommit: setHabits,
+    onShowToast: showToast,
+    commitMessage: 'habits updated',
+  });
 
   useEffect(() => {
-    if (isOpen) {
-      setTempHabits(habits);
-      setTempWhy(why);
+    if (!isOpen) {
+      whyUndo.reset();
+      habitsUndo.reset();
     }
-  }, [isOpen, habits, why]);
+  }, [isOpen]);
+
+  const handleKeyDown = (callback: () => void) => (e: { key: string; preventDefault: () => void }) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      callback();
+    }
+  };
 
   return (
     <>
@@ -40,25 +61,10 @@ export function HabitButton({ habits, why, setWhy, setHabits, showToast }: Habit
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-[var(--text-dim)]">your why (50 chars max)</label>
             <textarea
-              value={tempWhy}
-              onChange={(e) => setTempWhy(e.target.value)}
-              enterKeyHint="done"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
-              onBlur={() => {
-                if (tempWhy !== why) {
-                  const prev = why;
-                  setWhy(tempWhy);
-                  showToast('why updated', () => {
-                    setWhy(prev);
-                    setTempWhy(prev);
-                  });
-                }
-              }}
+              value={whyUndo.tempValue}
+              onChange={(e) => whyUndo.setTempValue(e.target.value)}
+              onBlur={() => whyUndo.commit(whyUndo.tempValue)}
+              onKeyDown={handleKeyDown(() => whyUndo.commit(whyUndo.tempValue))}
               maxLength={50}
               className="bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] resize-none outline-none focus:ring-2 focus:ring-[var(--accent)]"
               rows={2}
@@ -67,32 +73,13 @@ export function HabitButton({ habits, why, setWhy, setHabits, showToast }: Habit
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-[var(--text-dim)]">core habits (30 chars max)</label>
-            {tempHabits.map((h, i) => (
+            {habitsUndo.tempValue.map((h, i) => (
               <div key={i} className="relative">
                 <input
                   value={h}
-                  onChange={(e) => {
-                    const newHabits = [...tempHabits];
-                    newHabits[i] = e.target.value;
-                    setTempHabits(newHabits);
-                  }}
-                  enterKeyHint="done"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  onBlur={() => {
-                    if (tempHabits[i] !== habits[i]) {
-                      const prev = [...habits];
-                      setHabits(tempHabits);
-                      showToast('habit updated', () => {
-                        setHabits(prev);
-                        setTempHabits(prev);
-                      });
-                    }
-                  }}
+                  onChange={(e) => habitsUndo.setItem(i, e.target.value)}
+                  onBlur={() => habitsUndo.commitAll()}
+                  onKeyDown={handleKeyDown(() => habitsUndo.commitAll())}
                   maxLength={30}
                   className="w-full bg-[var(--surface-alt)] text-[var(--text)] p-4 rounded-[var(--radius-lg)] outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   placeholder={`habit ${i + 1}`}

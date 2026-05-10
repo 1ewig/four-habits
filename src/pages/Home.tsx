@@ -4,12 +4,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Header } from '../components/Header';
 import { HabitGrid } from '../components/Home/HabitGrid';
 import { MoodPicker } from '../components/Home/MoodPicker';
+import { useHaptic } from '../hooks/useHaptic';
+import { getYesterdayStr } from '../lib/dateUtils';
 
 export function Home() {
   const { habits, today_done, toggleHabit, feelings, today_date, setFeeling, late_logging, history, toggleHistoryHabit, setHistoryFeeling, demo_mode, demo_history } = useHabitStore();
   const [viewDate, setViewDate] = useState(today_date);
+  const { triggerToggle } = useHaptic();
 
-  // If late_logging changes away from true, reset to today
   useEffect(() => {
     if (!late_logging) {
       setViewDate(today_date);
@@ -22,17 +24,7 @@ export function Home() {
   const currentFeeling = feelings[viewDate];
 
   const handleToggle = (index: number) => {
-    // Haptic feedback
-    if (navigator.vibrate) {
-      const isNowDone = !activeDone[index];
-      const willBePerfect = isNowDone && activeDone.filter((_, i) => i !== index && activeDone[i]).length === 3;
-      
-      if (willBePerfect) {
-        navigator.vibrate([40, 30, 80]);
-      } else {
-        navigator.vibrate(10);
-      }
-    }
+    triggerToggle(activeDone, index);
     
     if (isToday) {
       toggleHabit(index);
@@ -49,16 +41,10 @@ export function Home() {
     }
   };
 
-  const getYesterdayStr = () => {
-    const d = new Date(today_date);
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().split('T')[0];
-  };
-  const yesterdayStr = getYesterdayStr();
+  const yesterdayStr = getYesterdayStr(today_date);
 
   return (
     <div className="h-full w-full flex flex-col pt-2 px-6 pb-24 max-w-md mx-auto gap-4">
-      {/* Header with Date Navigation */}
       <Header 
         date={viewDate} 
         leftAction={
