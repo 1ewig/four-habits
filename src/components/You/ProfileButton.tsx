@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useHabitStoreBase } from '../../lib/store';
-import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
 import { FormField } from '../ui/FormField';
 import { Toggle } from '../ui/Toggle';
+import { SettingsCard } from '../ui/SettingsCard';
 
 export function ProfileButton() {
   const name = useHabitStoreBase((s) => s.name);
@@ -18,11 +18,7 @@ export function ProfileButton() {
 
   return (
     <>
-      <motion.button
-        onClick={() => setIsOpen(true)}
-        className="col-span-2 bg-[var(--surface)] p-6 rounded-[var(--radius-xl)] flex items-center gap-4 h-32 w-full text-left transition-colors hover:bg-[var(--surface-alt)]"
-        whileTap={{ scale: 0.95 }}
-      >
+      <SettingsCard onClick={() => setIsOpen(true)} className="col-span-2 justify-start items-center gap-4 text-left px-6">
         <div className="w-16 h-16 rounded-[var(--radius-full)] bg-[var(--accent)] flex items-center justify-center text-[var(--bg)] text-2xl font-bold shrink-0">
           {name.charAt(0).toLowerCase() || 'y.'}
         </div>
@@ -30,7 +26,7 @@ export function ProfileButton() {
           <span className="text-xl font-bold text-[var(--text)]">{name}</span>
           <span className="text-sm text-[var(--text-dim)]">{bio}</span>
         </div>
-      </motion.button>
+      </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="your identity">
         <div className="flex flex-col gap-6">

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useHabitStoreBase } from '../../lib/store';
-import { motion } from 'motion/react';
-import { Info } from 'lucide-react';
 import { Modal } from '../ui/Modal';
+import { SettingsCard } from '../ui/SettingsCard';
 import { TimePicker } from '../ui/TimePicker';
+import { Info } from 'lucide-react';
 
 export function ResetButton() {
   const reset_h = useHabitStoreBase((s) => s.reset_h);
@@ -27,11 +27,7 @@ export function ResetButton() {
 
   return (
     <>
-      <motion.button
-        onClick={() => setIsOpen(true)}
-        className="col-span-2 bg-[var(--surface)] p-6 rounded-[var(--radius-xl)] flex items-center justify-between w-full text-left transition-colors hover:bg-[var(--surface-alt)]"
-        whileTap={{ scale: 0.95 }}
-      >
+      <SettingsCard onClick={() => setIsOpen(true)} className="col-span-2 p-6 items-center justify-between text-left">
         <div className="flex flex-col">
           <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">reset time</span>
           <span className="text-2xl font-bold text-[var(--text)]">
@@ -41,7 +37,7 @@ export function ResetButton() {
         <div className="bg-[var(--surface-alt)] p-2 rounded-full text-[var(--text-dim)]">
           <Info className="w-5 h-5" />
         </div>
-      </motion.button>
+      </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="system settings">
         <div className="flex flex-col gap-6">

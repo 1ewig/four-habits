@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useHabitStoreBase } from '../../lib/store';
 import { THEMES } from '../../lib/constants';
-import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
+import { SettingsCard } from '../ui/SettingsCard';
 import { Palette } from 'lucide-react';
 
 export function ThemeButton() {
@@ -13,14 +13,10 @@ export function ThemeButton() {
 
   return (
     <>
-      <motion.button
-        onClick={() => setIsOpen(true)}
-        className="bg-[var(--surface)] p-6 rounded-[var(--radius-xl)] flex flex-col items-center justify-center gap-2 text-[var(--text)] transition-colors hover:bg-[var(--surface-alt)] h-32"
-        whileTap={{ scale: 0.95 }}
-      >
+      <SettingsCard onClick={() => setIsOpen(true)} className="p-6 flex-col items-center justify-center gap-2">
         <Palette className="w-6 h-6 text-[var(--accent)]" />
         <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] uppercase">theme</span>
-      </motion.button>
+      </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="evolution themes">
         <div className="grid grid-cols-2 gap-3">

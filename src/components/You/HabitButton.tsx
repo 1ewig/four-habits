@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useHabitStoreBase } from '../../lib/store';
-import { motion } from 'motion/react';
 import { Modal } from '../ui/Modal';
 import { FormField } from '../ui/FormField';
+import { SettingsCard } from '../ui/SettingsCard';
 
 export function HabitButton() {
   const habits = useHabitStoreBase((s) => s.habits);
@@ -15,16 +15,12 @@ export function HabitButton() {
 
   return (
     <>
-      <motion.button
-        onClick={() => setIsOpen(true)}
-        className="bg-[var(--surface)] p-4 rounded-[var(--radius-xl)] flex flex-col items-center justify-center gap-1 text-[var(--text)] transition-colors hover:bg-[var(--surface-alt)] h-32"
-        whileTap={{ scale: 0.95 }}
-      >
+      <SettingsCard onClick={() => setIsOpen(true)} className="p-4 flex-col items-center justify-center gap-1">
         <span className="text-xs font-medium tracking-wide text-[var(--text-dim)] mb-1">habits</span>
         <span className="text-lg font-bold text-[var(--text)] text-center line-clamp-3 italic leading-tight">
           "{why}"
         </span>
-      </motion.button>
+      </SettingsCard>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="habits & system">
         <div className="flex flex-col gap-6">
