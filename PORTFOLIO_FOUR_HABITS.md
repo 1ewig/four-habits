@@ -34,29 +34,45 @@ The application transforms daily consistency into an engaging, visually rewardin
 ```
 src/
 ├── components/
-│   └── ui/                     # 8 reusable UI primitives
-│       ├── Modal.tsx           # Slide-up modal with animation
-│       ├── SegmentedControl.tsx # Tab selector (default/nav variants)
-│       ├── FormField.tsx        # Labeled input with undo pattern
-│       ├── Toggle.tsx           # Animated boolean switch
-│       ├── TimePicker.tsx       # Hour/minute selector
-│       ├── IconButton.tsx       # Animated icon button
-│       ├── Toast.tsx            # Notification display
-│       └── ModalButton.tsx       # Button + Modal wrapper
-├── hooks/                       # 9 custom hooks
+│   ├── ui/                     # 6 reusable UI primitives
+│   │   ├── Modal.tsx           # Slide-up modal with smooth animation
+│   │   ├── SegmentedControl.tsx # Tab selector (default/nav variants)
+│   │   ├── FormField.tsx        # Labeled input with undo pattern
+│   │   ├── Toggle.tsx           # Animated boolean switch
+│   │   ├── TimePicker.tsx       # Hour/minute selector
+│   │   └── SettingsCard.tsx    # Reusable settings button
+│   ├── Home/                   # Home page components
+│   │   ├── TodayHeader.tsx      # Date header with navigation
+│   │   ├── HabitGrid.tsx        # 2x2 habit grid
+│   │   ├── HabitCard.tsx        # Individual habit card
+│   │   └── MoodPicker.tsx       # Emoji mood selector
+│   ├── Progress/               # Progress page components
+│   │   ├── NeuralWeb.tsx        # Generative art visualization
+│   │   └── MomentumCharts.tsx  # Bar charts & stats
+│   └── You/                    # You page components
+│       ├── ProfileButton.tsx   # Profile settings
+│       ├── HabitButton.tsx     # Habits & why settings
+│       ├── ThemeButton.tsx     # Theme selection
+│       ├── ResetButton.tsx     # Reset time settings
+│       └── UndoToast.tsx       # Toast notification
+├── hooks/                       # 7 custom hooks
 │   ├── useHaptic.ts             # Vibration patterns
 │   ├── useUndoable.ts           # Undo pattern for single values
-│   ├── useUndoableArray.ts      # Undo pattern for arrays
-│   ├── useToast.ts              # Toast state management
 │   ├── useNodePositions.ts      # Neural Web node calculations
 │   ├── usePaths.ts              # SVG path generation
-│   └── useProgressData.ts       # Data aggregation for analytics
-├── lib/                         # 4 utility modules
+│   ├── useProgressData.ts       # Data aggregation for analytics
+│   ├── useNodePositions.ts      # Neural Web positioning
+│   └── usePaths.ts              # Neural Web paths
+├── lib/                         # 5 utility modules
 │   ├── constants.ts             # Magic numbers, config objects
+│   ├── animations.ts            # Shared animation configs
 │   ├── dateUtils.ts             # Date formatting/parsing
 │   ├── themes.ts                # Theme metadata (emoji, name)
 │   └── habitUtils.ts            # Habit calculations, status detection
-├── pages/                       # 3 pages (UI only)
+├── pages/                       # 3 pages (thin orchestrators)
+│   ├── Home.tsx                 # Home page
+│   ├── Progress.tsx             # Progress page
+│   └── You.tsx                  # You page
 ├── store.ts                     # Zustand store with selectors
 └── App.tsx                      # Root component
 ```
@@ -66,23 +82,18 @@ src/
 ## Architecture Pattern
 
 ```
-UI Component → Hook (stateful logic) → Utility/Constants (pure functions)
-     ↓
-  Zustand Store (state management + selectors)
+Page (thin orchestrator)
+    ↓ renders
+Component (self-sufficient UI, calls store directly)
+    ↓ uses
+Hook (business logic)
+    ↓ uses
+Utility/Constants (pure functions)
+    ↓ uses
+Zustand Store (state management)
 ```
 
-**Flow Example:**
-```
-NeuralWeb component (UI)
-    ↓ uses
-useNodePositions hook (calculation) + usePaths hook (path generation)
-    ↓ uses
-constants.ts (NEURAL_WEB config)
-    ↓ uses
-useProgressData hook (data aggregation)
-    ↓ reads
-Zustand store (via selectors)
-```
+**Key Principle**: Pages are now pure UI orchestrators with zero business logic. Components call the store directly for their data.
 
 ---
 
@@ -92,6 +103,7 @@ Zustand store (via selectors)
 - 4 customizable habit pillars with identity-focused "why" statements
 - Default habits: sweat., build., read., fast.
 - Per-habit tracking with completion status
+- Late-night logging support with configurable reset times
 
 ### Neural Web Visualization
 Custom generative art system transforming habit data into visual beauty:
@@ -114,11 +126,12 @@ Custom generative art system transforming habit data into visual beauty:
 - Smart reset time handling for late-night logging
 
 ### Zen Experience
-- 3-emoji mood picker
+- 3-emoji mood picker (😞 😐 🤩)
 - 9 premium themes: carbon, ghost, sand, birch, sakura, frost, arctic, bone, obsidian
-- Bento-grid settings layout
+- Bento-grid settings layout with consistent buttons
 - Haptic feedback on interactions
 - 60fps animations via Motion library
+- "Yesterday" display instead of date when viewing previous day
 
 ---
 
@@ -133,6 +146,7 @@ This project demonstrates AI-assisted development practices:
    - Debug complex state management
    - Optimize render performance
    - Design algorithmic solutions (golden angle, binary tree patterns)
+   - Systematically refactor for modularity
 
 2. **AI-Ready Infrastructure**:
    - Google Gemini SDK configured
@@ -147,48 +161,52 @@ The codebase underwent systematic modularization:
 |-------|-------|--------|
 | **Phase 1** | Constants & Utilities | Pure functions in `lib/` |
 | **Phase 2** | Custom Hooks | Stateful logic abstracted |
-| **Phase 3** | UI Primitives | 8 reusable components |
-| **Phase 4** | Utility Modules | Business logic extracted |
-| **Phase 5** | Store Enhancement | Selector hooks for optimization |
-| **Phase 6** | Component Refactoring | Pure UI components |
+| **Phase 3** | UI Primitives | 6 reusable components |
+| **Phase 4** | Component Refactoring | Pages become thin orchestrators |
+| **Phase 5** | Self-Sufficient Components | Components call store directly |
+| **Phase 6** | Animation Centralization | Shared transitions in lib/animations.ts |
 
 ### State Management (Zustand)
 
 ```typescript
-// Store with selectors for optimized re-renders
-export function useIsPerfectDay() {
-  return useHabitStoreBase((s) => s.today_done.every(Boolean));
+// Components call store directly - no props drilling
+export function TodayHeader() {
+  const viewDate = useHabitStoreBase((s) => s.viewDate);
+  const today_date = useHabitStoreBase((s) => s.today_date);
+  const late_logging = useHabitStoreBase((s) => s.late_logging);
+  const why = useHabitStoreBase((s) => s.why);
+  const setViewDate = useHabitStoreBase((s) => s.setViewDate);
+  // ... render
 }
+```
 
-export function useActiveHistory() {
-  return useHabitStoreBase((s) => s.demo_mode ? s.demo_history : s.history);
-}
+### Shared Animation System
+
+All animations centralized in `lib/animations.ts`:
+
+```typescript
+export const TRANSITIONS = {
+  modalSlide: { stiffness: 150, damping: 20, mass: 0.8 },
+  barChart: { stiffness: 100, damping: 20 },
+  page: { duration: 0.2, ease: 'easeInOut' },
+  habitPage: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+} as const;
 ```
 
 ### Key Patterns Implemented
 
-- **Separation of Concerns**: UI → Hooks → Utilities → Constants
+- **Pages as Orchestrators**: Zero business logic, just render components
+- **Self-Sufficient Components**: Each component calls store for its own data
 - **Selector Pattern**: Optimized subscriptions prevent unnecessary re-renders
-- **Hook Composition**: Custom hooks abstract complex logic
 - **CSS Variables Theming**: 9-theme architecture via className injection
 - **Motion's `layoutId`**: Smooth tab transitions
 - **Memoized Calculations**: `useMemo` for expensive SVG/analytics
-
-### Complex Algorithms
-
-**Neural Web Golden Angle**:
-```typescript
-const angle = i * 2.39996323; // Golden angle in radians
-const radius = Math.sqrt(i) * 28 + restBoost;
-```
-
-**Smart Reset Logic**: Handles user-defined "logical days" for tracking past midnight with configurable reset times.
 
 ---
 
 ## Performance Optimizations
 
-- **Selector hooks**: Components subscribe to specific slices, not entire store
+- **Direct store access**: Components subscribe to specific slices, no prop drilling
 - **Memoized SVG calculations**: `useMemo` for Neural Web nodes/paths
 - **Decoupled visualization**: Pure calculation hooks separated from UI
 - **Motion's `AnimatePresence`**: Efficient unmount animations
@@ -204,9 +222,6 @@ npm run dev
 
 # Production build
 npm run build
-
-# Linting
-npm run lint
 ```
 
 ---
@@ -217,24 +232,25 @@ npm run lint
 |-------------------|----------|
 | **React 19 Mastery** | Latest features, StrictMode, concurrent patterns |
 | **Modular Architecture** | 6-phase refactoring, clean separation of concerns |
-| **State Management** | Zustand with persist, selector hooks for optimization |
+| **State Management** | Zustand with persist, direct component access |
 | **Data Visualization** | Custom generative SVG algorithms (golden angle, binary tree) |
-| **Custom Hooks** | 9 hooks covering state, calculations, and utilities |
-| **UI Primitives** | 8 reusable components in `ui/` folder |
+| **Custom Hooks** | 7 hooks covering state, calculations, and utilities |
+| **UI Primitives** | 6 reusable components in `ui/` folder |
 | **Design System** | 9-theme architecture with CSS variables |
-| **Animation UX** | 60fps Motion animations, haptic feedback |
+| **Animation UX** | Centralized animations with smooth transitions |
 | **TypeScript** | Strict mode, full type coverage |
 | **AI Integration** | Gemini SDK configured, AI-assisted development |
-| **Performance** | Memoization, selector pattern, optimized renders |
+| **Performance** | Memoization, direct store access, optimized renders |
 
 ---
 
 ## Project Statistics
 
 - **6 phases** of systematic modularization
-- **9 custom hooks** for logic abstraction
-- **8 UI primitives** for reusable components
-- **4 utility modules** for pure functions
+- **7 custom hooks** for logic abstraction
+- **6 UI primitives** for reusable components
+- **5 utility modules** for pure functions
+- **3 pages** as thin orchestrators
 - **~150 lines** in Zustand store (well-organized, no over-engineering)
 
 ---
