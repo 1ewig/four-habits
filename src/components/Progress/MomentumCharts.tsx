@@ -40,7 +40,7 @@ export function MomentumCharts() {
                   className={`flex-1 rounded-t-[var(--radius-sm)] ${bg}`}
                   initial={{ height: 0 }}
                   animate={{ height }}
-                  transition={{ ...TRANSITIONS.barChart, delay: i * DELAYS.barChart }}
+                  transition={TRANSITIONS.barChart}
                 />
               );
             })}
